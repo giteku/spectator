@@ -104,9 +104,14 @@ public class IpcServletFilter implements Filter {
 
   private String getEndpoint(HttpServletRequest httpReq) {
     String servletPath = ServletPathHack.getServletPath(httpReq);
-    return (servletPath == null || servletPath.isEmpty())
-        ? "/"
-        : servletPath;
+    if (servletPath == null || servletPath.isEmpty()) {
+      return "/";
+    }
+    // Only allow alphanumeric, '/', '-', and '_'. Fallback if not matching.
+    if (!servletPath.matches("^[a-zA-Z0-9/_\\-]+$")) {
+      return "/";
+    }
+    return servletPath;
   }
 
   private void addNetflixHeaders(HttpServletResponse httpRes, String endpoint) {
